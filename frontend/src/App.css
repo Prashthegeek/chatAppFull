@@ -1,0 +1,118 @@
+/* @import url("https://fonts.googleapis.com/css2?family=Work+Sans:wght@300&display=swap");
+
+.App {
+  min-height: 100vh;
+  display: flex;
+  background-image: url("https://tse4.mm.bing.net/th?id=OIP.OjU5C1iH9mUneCVOxSsv1gHaEo&pid=Api&P=0&h=180");
+  background-position: center;
+  background-size: cover;
+}
+
+::-webkit-scrollbar {
+  width: 0px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(136, 136, 136, 0.281);
+}
+
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+} */
+
+
+
+
+
+
+
+
+
+/* App.css is the part where we can style the pages of our app(like here, we have two pages -> 1.homepage.js and 2. chatPage.js) , just create the classes and ids here and then have them in the pages components using className prop.(in chakra ui or tailwind, in simple, they are classes of css), on the other hand , index.css acts as the global stying, styling index.css have chnges in the to whole of our app , so , we style the fonts, fontfamily etc in the index.js . also we style the universal padding and margin over there to overcome the default browser property */
+
+body, html {
+  margin: 0;
+  padding: 0;
+  font-family: 'Work Sans', sans-serif;
+  height: 100%;
+}
+
+/* Vibrant Gradient Background with Animation */
+.homepage {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #6a11cb, #2575fc);
+  background-size: 400% 400%;
+  animation: gradientBackground 15s ease infinite;
+  padding: 20px;
+  position: relative; /* Position relative to contain the waves */
+  overflow: hidden;
+}
+
+@keyframes gradientBackground {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+
+@keyframes wave {
+  0% { transform: translateX(-50%) translateY(0); }
+  50% { transform: translateX(-50%) translateY(-20px); }
+  100% { transform: translateX(-50%) translateY(0); }
+}
+
+/* Box Styling for Login/Signup Container */
+.homepage-container {
+  width: 100%;
+  max-width: 400px;
+  padding: 15px;
+  background-color: rgba(255, 255, 255, 0.95);
+  border-radius: 12px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  overflow-y: auto;
+  max-height: 80vh;
+  animation: slideDown 1s ease-out;
+  opacity: 0;
+  animation-fill-mode: forwards;
+}
+
+@keyframes slideDown {
+  0% {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.homepage-title {
+  font-size: 2rem;
+  font-weight: 700;
+  text-align: center;
+  color: #333;
+  margin-bottom: 0.75rem;
+}
+
+input {
+  height: 35px;
+  font-size: 14px;
+}
+
+/* Responsive Adjustments */
+@media screen and (max-width: 480px) {
+  .homepage-title {
+    font-size: 1.75rem;
+  }
+
+  .homepage-container {
+    padding: 10px;
+    max-width: 320px;
+  }
+}
+
