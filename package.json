@@ -13,12 +13,14 @@
     "mern",
     "chat-app"
   ],
-  "author": "Piyush Agarwal",
+  "author": "Prashant",
   "license": "ISC",
   "dependencies": {
     "@fortawesome/free-solid-svg-icons": "^6.6.0",
     "@fortawesome/react-fontawesome": "^0.2.2",
+    "backblaze-b2": "^1.7.0",
     "bcryptjs": "^2.4.3",
+    "cloudinary": "^2.4.0",
     "colors": "^1.4.0",
     "dotenv": "^9.0.2",
     "express": "^4.19.2",

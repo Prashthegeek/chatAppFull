@@ -4,6 +4,7 @@ const User = require("../models/userModel");
 const Chat = require("../models/chatModel");
 const path = require('path');
 const fs = require('fs');
+const { cloudinary, b2 } = require("../config/cloudStorage");
 
 //@description     Get all Messages
 //@route           GET /api/Message/:chatId
@@ -116,10 +117,78 @@ const allMessages = asyncHandler(async (req, res) => {   //get all the messages 
 // });
 
 
+// const sendMessage = asyncHandler(async (req, res) => {
+//   const { chatId, content } = req.body;
+//   console.log(chatId);
+//   console.log(content);
+//   if (!chatId) {
+//     console.log("Invalid data passed into request");
+//     return res.sendStatus(400);
+//   }
+
+//   let newMessageData = {
+//     sender: req.user._id,
+//     chat: chatId,
+//     content: content || "",
+//     type: "text",
+//     file: null // Initialize file as null
+//   };
+
+//   // Check if there's a file in the request
+//   if (req.file) {
+//     // Overwrite the content with the file path and set type to file
+//     newMessageData.file = `/uploads/${req.file.filename}`;  // Ensure the path starts with /uploads
+//     newMessageData.type = "file";  // Set type to file
+//   }
+//   if (!newMessageData.content && !req.file) {
+//     console.log("Invalid data passed into request");
+//     return res.sendStatus(400);
+//   }
+
+//   try {
+//     let message = await Message.create(newMessageData);
+
+//     message = await message
+//       .populate("sender", "name pic")
+//       .populate({
+//         path: "chat",
+//         populate: {
+//           path: "users",
+//           select: "name pic email",
+//         },
+//       })
+//       .execPopulate();
+      
+//       console.log(message);
+
+//     await Chat.findByIdAndUpdate(chatId, { latestMessage: message })
+
+//     res.json(message);
+//   } catch (error) {
+//     res.status(400);
+//     throw new Error(error.message);
+//   }
+// });
+
+
+
+
+
+
+
+
+
+
+//just before this is just above
+
+
 const sendMessage = asyncHandler(async (req, res) => {
   const { chatId, content } = req.body;
-  console.log(chatId);
-  console.log(content);
+
+  // Debugging information to confirm the data being received
+  console.log("req.body:", req.body); // ChatId and Content
+  console.log("req.file:", req.file); // File Information
+
   if (!chatId) {
     console.log("Invalid data passed into request");
     return res.sendStatus(400);
@@ -130,21 +199,66 @@ const sendMessage = asyncHandler(async (req, res) => {
     chat: chatId,
     content: content || "",
     type: "text",
-    file: null // Initialize file as null
+    file: null, // Initialize file as null
   };
 
-  // Check if there's a file in the request
+  // Check if a file was uploaded
   if (req.file) {
-    // Overwrite the content with the file path and set type to file
-    newMessageData.file = `/uploads/${req.file.filename}`;  // Ensure the path starts with /uploads
-    newMessageData.type = "file";  // Set type to file
+    const fileType = req.file.mimetype.split("/")[0]; // image, video, etc.
+    let fileUrl = null;
+
+    try {
+      // Upload the file to Cloudinary
+      if (fileType === "image" || fileType === "video") {
+        const streamUpload = (file) => {
+          return new Promise((resolve, reject) => {
+            const stream = cloudinary.uploader.upload_stream({ resource_type: fileType }, (error, result) => {
+              if (result) {
+                resolve(result); // Resolve the promise with the result
+              } else {
+                reject(error); // Reject the promise with the error
+              }
+            });
+            stream.end(file.buffer); // Pass the buffer to the stream
+          });
+        };
+
+        const result = await streamUpload(req.file); // Wait for the upload to finish
+        fileUrl = result.secure_url; // Store the Cloudinary URL
+        console.log("File uploaded to Cloudinary:", fileUrl); // Debugging the uploaded URL
+      } else if (fileType === "application" && req.file.mimetype === "application/pdf") {
+        // Backblaze B2 Upload (as in your original implementation)
+        await b2.authorize();
+        const uploadUrl = await b2.getUploadUrl({ bucketId: process.env.B2_BUCKET_ID });
+        const b2Upload = await b2.uploadFile({
+          uploadUrl: uploadUrl.uploadUrl,
+          uploadAuthToken: uploadUrl.authorizationToken,
+          fileName: req.file.originalname,
+          data: req.file.buffer,
+        });
+        fileUrl = b2Upload.data.fileUrl;
+        console.log("File uploaded to Backblaze:", fileUrl);
+      }
+
+      // If a file was uploaded successfully, update the message data
+      if (fileUrl) {
+        newMessageData.file = fileUrl;
+        newMessageData.type = "file";
+      }
+    } catch (error) {
+      console.error("File upload failed:", error); // Log the exact error
+      return res.status(500).json({ message: "File upload failed" });
+    }
   }
+
+  // If neither content nor file exists, return an error
   if (!newMessageData.content && !req.file) {
     console.log("Invalid data passed into request");
     return res.sendStatus(400);
   }
 
   try {
+    // Save the new message to the database
     let message = await Message.create(newMessageData);
 
     message = await message
@@ -157,18 +271,16 @@ const sendMessage = asyncHandler(async (req, res) => {
         },
       })
       .execPopulate();
-      
-      console.log(message);
 
-    await Chat.findByIdAndUpdate(chatId, { latestMessage: message })
+    await Chat.findByIdAndUpdate(chatId, { latestMessage: message });
 
     res.json(message);
   } catch (error) {
+    console.error("Message creation failed:", error);
     res.status(400);
     throw new Error(error.message);
   }
 });
-
 
 
 

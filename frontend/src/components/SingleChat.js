@@ -1194,10 +1194,24 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
       if (newMessage.trim()) {
         formData.append("content", newMessage.trim());
       }
-
-      if (file) {
+    // Check if file exists, then append it
+    if (file) {
+      // Optionally: check if the file is a supported format
+      const supportedFormats = ['image/png', 'image/jpeg', 'image/jpg', 'video/mp4', 'application/pdf'];
+      if (supportedFormats.includes(file.type)) {
         formData.append("file", file);
+      } else {
+        toast({
+          title: "Unsupported File Format",
+          description: "Please upload images, videos, or PDFs only.",
+          status: "warning",
+          duration: 3000,
+          isClosable: true,
+          position: "bottom",
+        });
+        return;
       }
+    }
       //printing the content of formData
       for (let [key, value] of formData.entries()) {
         console.log(key, value);
