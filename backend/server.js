@@ -163,7 +163,7 @@ const server = app.listen(
 const io = require("socket.io")(server, {
   pingTimeout: 60000,
   cors: {
-    origin: "http://localhost:3000",  //frontend url(if deployed ,then give the deployed url)
+    origin: ["https://chatappfull.onrender.com", "http://localhost:3000"], 
     methods: ["GET", "POST"],
     // credentials: true,
   },
