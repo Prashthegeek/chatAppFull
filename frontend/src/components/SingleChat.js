@@ -1018,7 +1018,7 @@ import { IconButton, Spinner, useToast } from "@chakra-ui/react";
 import { getSender, getSenderFull } from "../config/ChatLogics";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { ArrowBackIcon, ArrowRightIcon, AttachmentIcon } from "@chakra-ui/icons";
+import { ArrowBackIcon, ArrowRightIcon, AttachmentIcon , CloseIcon  } from "@chakra-ui/icons";
 import ProfileModal from "./miscellaneous/ProfileModal";
 import ScrollableChat from "./ScrollableChat";
 import Lottie from "react-lottie";
@@ -1420,7 +1420,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
       />
     </div>
   )}
-  
+
   {showEmojiPicker && (
     <Box position="absolute" bottom="60px" right="20px">
       <Picker 
@@ -1431,69 +1431,125 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
       />
     </Box>
   )}
+{/* File Preview */}
+{file && (
+  <Box
+    mb={2}
+    bg="gray.200"
+    p={2}
+    borderRadius="md"
+    position="relative"
+    maxW="200px"  // Set max width for container
+    maxH="200px"  // Set max height for container
+    overflow="hidden" // Prevent content overflow
+  >
+    {/* Image Preview */}
+    {/\.(jpeg|jpg|gif|png|bmp|svg)$/i.test(file.name) && (
+      <Image
+        src={URL.createObjectURL(file)}
+        alt="preview"
+        maxHeight="100%" // Set height constraint
+        maxWidth="100%"  // Set width constraint
+        objectFit="cover" // Make sure the image fits inside the box
+      />
+    )}
 
-  {/* File Preview */}
-  {file && (
-    <Box mb={2} bg="gray.200" p={2} borderRadius="md">
-      {/\.(jpeg|jpg|gif|png|bmp|svg)$/i.test(file.name) ? (
-        <Image src={URL.createObjectURL(file)} alt="preview" maxHeight="200px" />
-      ) : (
-        <Text>{file.name}</Text>
-      )}
-    </Box>
-  )}
+    {/* Video Preview */}
+    {/\.(mp4|mov|avi|mkv)$/i.test(file.name) && (
+      <Box>
+        <video
+          controls
+          src={URL.createObjectURL(file)}
+          alt="preview"
+          style={{
+            maxHeight: "200px", // Constrain height
+            maxWidth: "100%",   // Set width constraint
+            objectFit: "cover"  // Fit video within the container
+          }}
+        />
+      </Box>
+    )}
 
-  <Box display="flex" alignItems="center">
-    <Input
-      variant="filled"
-      bg="#E0E0E0"
-      placeholder="Enter a message.."
-      value={newMessage}
-      onChange={typingHandler}
-      onKeyDown={(e) => {
-        if (e.key === "Enter") {
-          handleSend();
-        }
-      }}
-    />
+    {/* PDF Preview */}
+    {/\.(pdf)$/i.test(file.name) && (
+      <Box>
+        <iframe
+          src={URL.createObjectURL(file)}
+          title="PDF Preview"
+          style={{
+            maxHeight: "200px", // Constrain height
+            maxWidth: "100%",   // Set width constraint
+            objectFit: "cover"  // Fit PDF within the container
+          }}
+        />
+      </Box>
+    )}
+
+    {/* Close Button to Remove File */}
     <IconButton
-      icon={<AttachmentIcon />}
-      variant="ghost"
-      aria-label="Attach File"
-      fontSize="24px"
-      marginLeft="2px"
-      onClick={() => document.getElementById('fileInput').click()}
-      _hover={{ backgroundColor: 'gray.100' }}
-    />
-    <input
-      type="file"
-      id="fileInput"
-      style={{ display: 'none' }}
-      onChange={handleFileChange}
-      accept="image/*,video/*,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-    />
-    <IconButton
-      icon={<ArrowRightIcon />}
-      onClick={handleSend}
-      aria-label="Send Message"
-      colorScheme="blue"
-      marginLeft="2px"
-    />
-    <IconButton
-      icon={<FontAwesomeIcon icon={faSmile} />}
-      onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-      aria-label="Emoji Picker"
-      variant="ghost"
-      fontSize="20px"
-      marginLeft="2px"
+      icon={<CloseIcon />}
+      size="xs"
+      colorScheme="red"
+      position="absolute"
+      top="5px"    // Adjust position for visibility
+      right="5px"  // Adjust position for visibility
+      onClick={() => setFile(null)}
     />
   </Box>
+)}
+
+<Box display="flex" alignItems="center">
+  <Input
+    variant="filled"
+    bg="#E0E0E0"
+    placeholder="Enter a message.."
+    value={newMessage}
+    onChange={typingHandler}
+    onKeyDown={(e) => {
+      if (e.key === "Enter") {
+        handleSend();
+      }
+    }}
+  />
+  <IconButton
+    icon={<AttachmentIcon />}
+    variant="ghost"
+    aria-label="Attach File"
+    fontSize="24px"
+    marginLeft="2px"
+    onClick={() => document.getElementById('fileInput').click()}
+    _hover={{ backgroundColor: 'gray.100' }}
+  />
+  <input
+    type="file"
+    id="fileInput"
+    style={{ display: 'none' }}
+    onChange={handleFileChange}
+    accept="image/*,video/*,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+  />
+  <IconButton
+    icon={<ArrowRightIcon />}
+    onClick={handleSend}
+    aria-label="Send Message"
+    colorScheme="blue"
+    marginLeft="2px"
+  />
+  <IconButton
+    icon={<FontAwesomeIcon icon={faSmile} />}
+    onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+    aria-label="Emoji Picker"
+    variant="ghost"
+    fontSize="20px"
+    marginLeft="2px"
+  />
+</Box>
+
 </FormControl>
 
           </Box>
         </>
       ) : (
-        <Box d="flex" alignItems="center" justifyContent="center" h="100%">
+        <Box display="flex" alignItems="center" justifyContent="center" h="100%">
           <Text fontSize="3xl" pb={3} fontFamily="Work sans">
             Click on a user to start chatting
           </Text>

@@ -225,7 +225,7 @@ const sendMessage = asyncHandler(async (req, res) => {
 
         const result = await streamUpload(req.file); // Wait for the upload to finish
         fileUrl = result.secure_url; // Store the Cloudinary URL
-        console.log("File uploaded to Cloudinary:", fileUrl); // Debugging the uploaded URL
+        console.log("File uploaded to Cloudinary:", fileUrl); // Debugging the uploaded URL , perfectly getting the correct url .
       } else if (fileType === "application" && req.file.mimetype === "application/pdf") {
         // Backblaze B2 Upload (as in your original implementation)
         await b2.authorize();

@@ -851,7 +851,7 @@ const ScrollableChat = ({ messages, newMessageTrigger }) => {
                   </a>
                 ) : m.type === "file" && isVideo(m.file) ? (
                   <Box mt={2}>
-                    <video
+                    <video                                    //provides better view to see videos (with three dots)
                       controls
                       src={m.file}
                       style={{
