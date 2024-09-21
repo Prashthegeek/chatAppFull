@@ -163,7 +163,7 @@ const server = app.listen(
 const io = require("socket.io")(server, {
   pingTimeout: 60000,
   cors: {
-    origin: ["https://chatappfull.onrender.com", "http://localhost:3000"],   //ek yaha change karo and next singleChat.js me const socket = io(https://chatappfull.onrender.com), do , the link of the server deployed link , frontend me backend deployed the link do and backend me frontend deployed ka link do(can also give development link also, also can give a single link (if both frontend and backend are deployed in the same link ))
+    origin: "https://chatappfull.onrender.com",   //ek yaha change karo and next singleChat.js me const socket = io(https://chatappfull.onrender.com), do , the link of the server deployed link , frontend me backend deployed the link do and backend me frontend deployed ka link do(can also give development link also, also can give a single link (if both frontend and backend are deployed in the same link ))
     // credentials: true,
   },
 });
