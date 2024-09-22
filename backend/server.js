@@ -160,12 +160,15 @@ const server = app.listen(
   console.log(`Server running on PORT ${PORT}...`.yellow.bold)
 );
 
-const io = require("socket.io")(server, {
-  pingTimeout: 60000,
+const io = require('socket.io')(server, {
+  pingTimeout: 60000,          // Keep the timeout
+  pingInterval: 25000,         // Send ping every 25 seconds
   cors: {
-    origin: "https://chatappfull.onrender.com",   //ek yaha change karo and next singleChat.js me const socket = io(https://chatappfull.onrender.com), do , the link of the server deployed link , frontend me backend deployed the link do and backend me frontend deployed ka link do(can also give development link also, also can give a single link (if both frontend and backend are deployed in the same link ))
-    // credentials: true,
+    origin: "https://chatappfull.onrender.com",  // Make sure to replace this with the actual URL if deployed
+    credentials: true,
   },
+  transports: ['websocket'],   // Force WebSocket connection, no fallback to long-polling
+  allowEIO3: true,             // Compatibility with older clients, useful if clients aren't fully upgraded
 });
  
 io.on("connection", (socket) => {
