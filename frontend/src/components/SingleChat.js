@@ -1386,12 +1386,12 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
             px={2}
             w="100%"
             fontFamily="Work sans"
-            d="flex"
+            display="flex"
             justifyContent={{ base: "space-between" }}
             alignItems="center"
           >
             <IconButton
-              d={{ base: "flex", md: "none" }}
+              display={{ base: "flex", md: "none" }}
               icon={<ArrowBackIcon />}
               onClick={() => setSelectedChat("")}
             />
@@ -1452,16 +1452,28 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   {showEmojiPicker && (    //wehn showEmojiPicker is true , then open the emoji box
     <Box 
     position="absolute"   
-    bottom={{ base: "20px", md: "60px" }}  // Adjust bottom positioning for mobile
-    right={{ base: "10px", md: "20px" }}   // Adjust right positioning for mobile
+    bottom={{ base: "20px", md: "60px" }}  // Adjust bottom positioning for mobile and desktop
+    left={{ base: "5%", md: "unset" }}     // Position from left on mobile
+    right={{ base: "unset", md: "20px" }}  // Right positioning for larger screens
     zIndex={10}  // Ensure it stays above other elements
-    ref={emojiPickerRef} //this reference will make the emoji box to close when user clicks outside the emoji box, attach the ref to the box 
+    ref={emojiPickerRef} // Attach ref for click outside detection
+    width={{ base: "90%", md: "320px" }}  // 90% width on mobile, fixed on desktop
+    maxWidth="320px"  // Maximum width on larger screens
+    maxHeight="350px"
+    overflowY="auto"  // Allow vertical scrolling if necessary
+    bg="white"
+    borderRadius="md"
+    boxShadow="lg"
     >  
       <Picker 
         data={data} 
         onEmojiSelect={addEmoji} 
         theme="light"
-        style={{ width: '200px', height: '200px' }}
+        style={{
+        width: '100%',       // Ensures the picker takes full container width
+        height: 'auto',       // Auto height for smaller content
+        maxHeight: '350px',  // Maintain maximum height
+        }}
       />
     </Box>
   )}
