@@ -36,6 +36,7 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
   const handleSearch = async (query) => {
     setSearch(query);
     if (!query) {
+      setSearchResult([]);  //Added
       return;
     }
 
@@ -248,7 +249,7 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
                 Update
               </Button>
             </FormControl>
-            <FormControl>
+            <FormControl>  {/*Search user */}
               <Input
                 placeholder="Add User to group"
                 mb={1}

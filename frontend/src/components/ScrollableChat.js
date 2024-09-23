@@ -681,6 +681,268 @@
 
 // -------------without using scrollable feed-------------
 
+
+// import { Avatar } from "@chakra-ui/avatar";
+// import { Tooltip } from "@chakra-ui/tooltip";
+// import { Box, Text, useToast } from "@chakra-ui/react";
+// import { useEffect, useRef, useState } from "react";
+// import moment from "moment";
+// import {
+//   isLastMessage,
+//   isSameSender,
+//   isSameSenderMargin,
+//   isSameUser,
+// } from "../config/ChatLogics";
+// import { ChatState } from "../Context/ChatProvider";
+// import {
+//   Modal,
+//   ModalOverlay,
+//   ModalContent,
+//   ModalBody,
+//   Image,
+// } from "@chakra-ui/react";
+
+// const isImage = (filePath) =>
+//   typeof filePath === "string" &&
+//   /\.(jpeg|jpg|gif|png|bmp|svg)$/i.test(filePath.toLowerCase());
+// const isPDF = (filePath) =>
+//   typeof filePath === "string" && /\.pdf$/i.test(filePath.toLowerCase());
+// const isVideo = (filePath) =>
+//   typeof filePath === "string" &&
+//   /\.(mp4|webm|ogg|mov)$/i.test(filePath.toLowerCase());
+
+// const ScrollableChat = ({ messages, newMessageTrigger }) => {
+//   const { user } = ChatState();
+//   const toast = useToast();
+//   const bottomRef = useRef(null); // Reference to scroll to the bottom
+//   const containerRef = useRef(null); // Reference for the scrollable container
+
+//   // to handle the expand image on click
+//   const [isOpen, setIsOpen] = useState(false);
+//   const [selectedImage, setSelectedImage] = useState(null);
+//   const [scale, setScale] = useState(1); // State to keep track of zoom level
+
+//   const handleImageClick = (image) => {
+//     setSelectedImage(image);
+//     setIsOpen(true);
+//   };
+
+//   const handleClose = () => {
+//     setIsOpen(false);
+//     setSelectedImage(null);
+//     setScale(1); // Reset zoom level when modal is closed
+//   };
+
+//   const handleZoom = (e) => {
+//     e.preventDefault(); // Prevent the default scroll behavior
+//     const zoomStep = 0.05; // Smaller step for slower zooming
+//     let newScale = scale + e.deltaY * -zoomStep;
+
+//     // Clamping the zoom scale between 1x and 3x
+//     if (newScale < 1) {
+//       newScale = 1;
+//     } else if (newScale > 3) {
+//       newScale = 3;
+//     }
+
+//     // Apply the new scale
+//     setScale(newScale);
+//   };
+
+//   // Function to scroll to the bottom without animation
+//   const scrollToBottomInstant = () => {
+//     if (bottomRef.current) {
+//       bottomRef.current.scrollIntoView({ behavior: "auto" }); // No animation
+//     }
+//   };
+
+//   // Function to scroll to the bottom with smooth animation (for new messages)
+//   const scrollToBottomSmooth = () => {
+//     if (bottomRef.current) {
+//       bottomRef.current.scrollIntoView({ behavior: "smooth" }); // Smooth scroll for new messages
+//     }
+//   };
+
+//   // Effect to scroll down instantly when entering the chat
+//   useEffect(() => {
+//     scrollToBottomInstant(); // Instantly scroll to the bottom on chat load
+//   }, [messages]);
+
+//   // Effect to scroll down smoothly when a new message is sent
+//   useEffect(() => {
+//     if (newMessageTrigger) {
+//       setTimeout(() => {
+//         scrollToBottomSmooth(); // Smoothly scroll to the bottom when a new message is sent
+//       }, 100); // Slight delay to ensure the message is added
+//     }
+//   }, [newMessageTrigger, messages]); // Include messages to ensure smooth scrolling when messages change
+
+//   return (
+//     <Box
+//       ref={containerRef}
+//       height="100%" // Set the container height according to your design
+//       overflowY="auto"
+//       p="10px"
+//     >
+//       {messages &&
+//         messages.map((m, i) => (
+//           <Box key={m._id} display="flex" flexDirection="column" mb="10px">
+//             <Box display="flex" alignItems="center">
+//               {(isSameSender(messages, m, i, user._id) ||
+//                 isLastMessage(messages, i, user._id)) && (
+//                 <Tooltip label={m.sender.name} placement="bottom-start" hasArrow>
+//                   <Avatar
+//                     mt="7px"
+//                     mr={1}
+//                     size="sm"
+//                     cursor="pointer"
+//                     name={m.sender.name}
+//                     src={m.sender.pic}
+//                   />
+//                 </Tooltip>
+//               )}
+//               <Box
+//                 bg={m.sender._id === user._id ? "#BEE3F8" : "#B9F5D0"}
+//                 ml={isSameSenderMargin(messages, m, i, user._id)}
+//                 mt={isSameUser(messages, m, i, user._id) ? 3 : 10}
+//                 borderRadius="20px"
+//                 p="5px 15px"
+//                 maxWidth="75%"
+//                 position="relative"
+//                 wordBreak="break-word"
+//               >
+//                 {m.type === "file" && isImage(m.file) ? (
+//                   <Image
+//                     src={`${m.file}`}
+//                     alt="Sent Image"
+//                     maxW="300px"
+//                     maxH="300px"
+//                     objectFit="cover"
+//                     borderRadius="md"
+//                     onClick={() => handleImageClick(m.file)}
+//                     cursor="pointer"
+//                     onError={(e) => {
+//                       console.error("Image failed to load", e);
+//                       toast({
+//                         title: "Image failed to load",
+//                         description: "Please check the file and try again.",
+//                         status: "error",
+//                         duration: 5000,
+//                         isClosable: true,
+//                       });
+//                     }}
+//                   />
+//                 ) : m.type === "file" && isPDF(m.file) ? (
+//                   <a
+//                     href={m.file}
+//                     target="_blank"
+//                     rel="noopener noreferrer"
+//                     onError={(e) => {
+//                       console.error("PDF failed to load", e);
+//                       toast({
+//                         title: "PDF failed to load",
+//                         description: "Please check the file and try again.",
+//                         status: "error",
+//                         duration: 5000,
+//                         isClosable: true,
+//                       });
+//                     }}
+//                   >
+//                     {m.file ? `View PDF: ${m.file.split("/").pop()}` : "View PDF"}
+//                   </a>
+//                 ) : m.type === "file" && isVideo(m.file) ? (
+//                   <Box mt={2}>
+//                     <video                                    //provides better view to see videos (with three dots)
+//                       controls
+//                       src={m.file}
+//                       style={{
+//                         maxHeight: "200px",
+//                         maxWidth: "100%",
+//                         borderRadius: "md",
+//                       }}
+//                       onError={(e) => {
+//                         console.error("Video failed to load", e);
+//                         toast({
+//                           title: "Video failed to load",
+//                           description: "Please check the file and try again.",
+//                           status: "error",
+//                           duration: 5000,
+//                           isClosable: true,
+//                         });
+//                       }}
+//                     />
+//                   </Box>
+//                 ) : m.type === "file" && m.file ? (
+//                   <a
+//                     href={m.file}
+//                     target="_blank"
+//                     rel="noopener noreferrer"
+//                     onError={(e) => {
+//                       console.error("File failed to load", e);
+//                       toast({
+//                         title: "File failed to load",
+//                         description: "Please check the file and try again.",
+//                         status: "error",
+//                         duration: 5000,
+//                         isClosable: true,
+//                       });
+//                     }}
+//                   >
+//                     {m.file.split("/").pop()}
+//                   </a>
+//                 ) : (
+//                   <Text>{m.content}</Text>
+//                 )}
+
+//                 <Text
+//                   fontSize="0.75rem"
+//                   color="#888888"
+//                   mt={1}
+//                   textAlign="left"
+//                   whiteSpace="nowrap"
+//                   fontStyle="italic"
+//                 >
+//                   {moment(m.timestamp).format("MMM D, h:mm a")}
+//                 </Text>
+//               </Box>
+//             </Box>
+//           </Box>
+//         ))}
+//       {/* Dummy div to allow smooth scroll to the bottom */}
+//       <div ref={bottomRef} />
+//       {/* Modal for expanding the image + zoom functionality */}
+//       <Modal isOpen={isOpen} onClose={handleClose} size="full">
+//   <ModalOverlay />
+//   <ModalContent display="flex" justifyContent="center" alignItems="center" bg="transparent" boxShadow="none">
+//     <ModalBody
+//       display="flex"
+//       justifyContent="center"
+//       alignItems="center"
+//       onWheel={handleZoom}
+//       overflow="hidden"
+//       p={0}
+//     >
+//       <Image
+//         src={selectedImage}
+//         alt="Expanded view"
+//         maxW="90vw"
+//         maxH="90vh"
+//         objectFit="contain"
+//         transform={`scale(${scale})`}
+//         cursor="zoom-out"
+//       />
+//     </ModalBody>
+//   </ModalContent>
+// </Modal>
+//     </Box>
+//   );
+// };
+
+// export default ScrollableChat;
+
+
+
+
 import { Avatar } from "@chakra-ui/avatar";
 import { Tooltip } from "@chakra-ui/tooltip";
 import { Box, Text, useToast } from "@chakra-ui/react";
@@ -701,6 +963,7 @@ import {
   Image,
 } from "@chakra-ui/react";
 
+// File type checks
 const isImage = (filePath) =>
   typeof filePath === "string" &&
   /\.(jpeg|jpg|gif|png|bmp|svg)$/i.test(filePath.toLowerCase());
@@ -713,13 +976,12 @@ const isVideo = (filePath) =>
 const ScrollableChat = ({ messages, newMessageTrigger }) => {
   const { user } = ChatState();
   const toast = useToast();
-  const bottomRef = useRef(null); // Reference to scroll to the bottom
-  const containerRef = useRef(null); // Reference for the scrollable container
+  const bottomRef = useRef(null);
+  const containerRef = useRef(null);
 
-  // to handle the expand image on click
   const [isOpen, setIsOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
-  const [scale, setScale] = useState(1); // State to keep track of zoom level
+  const [scale, setScale] = useState(1);
 
   const handleImageClick = (image) => {
     setSelectedImage(image);
@@ -729,63 +991,47 @@ const ScrollableChat = ({ messages, newMessageTrigger }) => {
   const handleClose = () => {
     setIsOpen(false);
     setSelectedImage(null);
-    setScale(1); // Reset zoom level when modal is closed
+    setScale(1);
   };
 
   const handleZoom = (e) => {
-    e.preventDefault(); // Prevent the default scroll behavior
-    const zoomStep = 0.05; // Smaller step for slower zooming
+    e.preventDefault();
+    const zoomStep = 0.05;
     let newScale = scale + e.deltaY * -zoomStep;
 
-    // Clamping the zoom scale between 1x and 3x
-    if (newScale < 1) {
-      newScale = 1;
-    } else if (newScale > 3) {
-      newScale = 3;
-    }
-
-    // Apply the new scale
+    if (newScale < 1) newScale = 1;
+    if (newScale > 3) newScale = 3;
     setScale(newScale);
   };
 
-  // Function to scroll to the bottom without animation
-  const scrollToBottomInstant = () => {
-    if (bottomRef.current) {
-      bottomRef.current.scrollIntoView({ behavior: "auto" }); // No animation
-    }
-  };
-
-  // Function to scroll to the bottom with smooth animation (for new messages)
-  const scrollToBottomSmooth = () => {
-    if (bottomRef.current) {
-      bottomRef.current.scrollIntoView({ behavior: "smooth" }); // Smooth scroll for new messages
-    }
-  };
-
-  // Effect to scroll down instantly when entering the chat
   useEffect(() => {
-    scrollToBottomInstant(); // Instantly scroll to the bottom on chat load
+    if (bottomRef.current) {
+      bottomRef.current.scrollIntoView({ behavior: "auto" });
+    }
   }, [messages]);
 
-  // Effect to scroll down smoothly when a new message is sent
   useEffect(() => {
     if (newMessageTrigger) {
       setTimeout(() => {
-        scrollToBottomSmooth(); // Smoothly scroll to the bottom when a new message is sent
-      }, 100); // Slight delay to ensure the message is added
+        if (bottomRef.current) {
+          bottomRef.current.scrollIntoView({ behavior: "smooth" });
+        }
+      }, 100);
     }
-  }, [newMessageTrigger, messages]); // Include messages to ensure smooth scrolling when messages change
+  }, [newMessageTrigger, messages]);
 
   return (
     <Box
       ref={containerRef}
-      height="100%" // Set the container height according to your design
+      height="100%"
       overflowY="auto"
       p="10px"
+      display="flex"
+      flexDirection="column"
     >
       {messages &&
         messages.map((m, i) => (
-          <Box key={m._id} display="flex" flexDirection="column" mb="10px">
+          <Box key={m._id} mb="10px" display="flex" flexDirection="column">
             <Box display="flex" alignItems="center">
               {(isSameSender(messages, m, i, user._id) ||
                 isLastMessage(messages, i, user._id)) && (
@@ -806,16 +1052,16 @@ const ScrollableChat = ({ messages, newMessageTrigger }) => {
                 mt={isSameUser(messages, m, i, user._id) ? 3 : 10}
                 borderRadius="20px"
                 p="5px 15px"
-                maxWidth="75%"
+                maxWidth={["90%", "80%", "75%"]} // Responsive width
                 position="relative"
                 wordBreak="break-word"
               >
                 {m.type === "file" && isImage(m.file) ? (
                   <Image
-                    src={`${m.file}`}
+                    src={m.file}
                     alt="Sent Image"
-                    maxW="300px"
-                    maxH="300px"
+                    maxW={["200px", "250px", "300px"]} // Responsive image size
+                    maxH={["200px", "250px", "300px"]}
                     objectFit="cover"
                     borderRadius="md"
                     onClick={() => handleImageClick(m.file)}
@@ -832,26 +1078,12 @@ const ScrollableChat = ({ messages, newMessageTrigger }) => {
                     }}
                   />
                 ) : m.type === "file" && isPDF(m.file) ? (
-                  <a
-                    href={m.file}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    onError={(e) => {
-                      console.error("PDF failed to load", e);
-                      toast({
-                        title: "PDF failed to load",
-                        description: "Please check the file and try again.",
-                        status: "error",
-                        duration: 5000,
-                        isClosable: true,
-                      });
-                    }}
-                  >
-                    {m.file ? `View PDF: ${m.file.split("/").pop()}` : "View PDF"}
+                  <a href={m.file} target="_blank" rel="noopener noreferrer">
+                    View PDF: {m.file.split("/").pop()}
                   </a>
                 ) : m.type === "file" && isVideo(m.file) ? (
                   <Box mt={2}>
-                    <video                                    //provides better view to see videos (with three dots)
+                    <video
                       controls
                       src={m.file}
                       style={{
@@ -872,27 +1104,12 @@ const ScrollableChat = ({ messages, newMessageTrigger }) => {
                     />
                   </Box>
                 ) : m.type === "file" && m.file ? (
-                  <a
-                    href={m.file}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    onError={(e) => {
-                      console.error("File failed to load", e);
-                      toast({
-                        title: "File failed to load",
-                        description: "Please check the file and try again.",
-                        status: "error",
-                        duration: 5000,
-                        isClosable: true,
-                      });
-                    }}
-                  >
+                  <a href={m.file} target="_blank" rel="noopener noreferrer">
                     {m.file.split("/").pop()}
                   </a>
                 ) : (
                   <Text>{m.content}</Text>
                 )}
-
                 <Text
                   fontSize="0.75rem"
                   color="#888888"
@@ -907,32 +1124,36 @@ const ScrollableChat = ({ messages, newMessageTrigger }) => {
             </Box>
           </Box>
         ))}
-      {/* Dummy div to allow smooth scroll to the bottom */}
       <div ref={bottomRef} />
-      {/* Modal for expanding the image + zoom functionality */}
       <Modal isOpen={isOpen} onClose={handleClose} size="full">
-  <ModalOverlay />
-  <ModalContent display="flex" justifyContent="center" alignItems="center" bg="transparent" boxShadow="none">
-    <ModalBody
-      display="flex"
-      justifyContent="center"
-      alignItems="center"
-      onWheel={handleZoom}
-      overflow="hidden"
-      p={0}
-    >
-      <Image
-        src={selectedImage}
-        alt="Expanded view"
-        maxW="90vw"
-        maxH="90vh"
-        objectFit="contain"
-        transform={`scale(${scale})`}
-        cursor="zoom-out"
-      />
-    </ModalBody>
-  </ModalContent>
-</Modal>
+        <ModalOverlay />
+        <ModalContent
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          bg="transparent"
+          boxShadow="none"
+        >
+          <ModalBody
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+            onWheel={handleZoom}
+            overflow="hidden"
+            p={0}
+          >
+            <Image
+              src={selectedImage}
+              alt="Expanded view"
+              maxW="90vw"
+              maxH="90vh"
+              objectFit="contain"
+              transform={`scale(${scale})`}
+              cursor="zoom-out"
+            />
+          </ModalBody>
+        </ModalContent>
+      </Modal>
     </Box>
   );
 };

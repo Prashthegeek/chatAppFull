@@ -1033,7 +1033,7 @@ import io from "socket.io-client";
 import UpdateGroupChatModal from "./miscellaneous/UpdateGroupChatModal";
 import { ChatState } from "../Context/ChatProvider";
 
-const ENDPOINT = "https://chatappfull.onrender.com"; // Replace with your server URL after deployment
+const ENDPOINT = "http://localhost:5000"; // Replace with your server URL after deployment
 let socket, selectedChatCompare; // socket is a variable, not a state.
 
 const SingleChat = ({ fetchAgain, setFetchAgain }) => {

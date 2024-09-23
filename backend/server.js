@@ -164,7 +164,7 @@ const io = require('socket.io')(server, {
   pingTimeout: 60000,          // Keep the timeout
   pingInterval: 25000,         // Send ping every 25 seconds
   cors: {
-    origin: "https://chatappfull.onrender.com",  // Make sure to replace this with the actual URL if deployed
+    origin: "http://localhost:3000",  // Make sure to replace this with the actual URL if deployed
     credentials: true,
   },
   transports: ['websocket'],   // Force WebSocket connection, no fallback to long-polling
