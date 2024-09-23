@@ -1011,12 +1011,12 @@
 
 
 import { FormControl } from "@chakra-ui/form-control";
-import { Input } from "@chakra-ui/input";
+import { Input , InputRightElement , InputLeftElement , InputGroup } from "@chakra-ui/input";
 import { Box, Text, Image } from "@chakra-ui/react"; // Make sure to import Image from Chakra UI
 import "./styles.css";
 import { IconButton, Spinner, useToast } from "@chakra-ui/react";
 import { getSender, getSenderFull } from "../config/ChatLogics";
-import { useEffect, useState } from "react";
+import { useEffect, useState , useRef } from "react";
 import axios from "axios";
 import { ArrowBackIcon, ArrowRightIcon, AttachmentIcon , CloseIcon  } from "@chakra-ui/icons";
 import ProfileModal from "./miscellaneous/ProfileModal";
@@ -1059,11 +1059,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   const { selectedChat, setSelectedChat, user, notification, setNotification } =
     ChatState();
 
-  // Function to add emoji to the message
-  const addEmoji = (e) => {
-    const emoji = e.native;
-    setNewMessage((prevMessage) => prevMessage + emoji);
-  };
+
 
   // Handle file selection and notify user
   const handleFileChange = (e) => {
@@ -1355,6 +1351,31 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     }, timerLength);
   };
 
+
+
+  const emojiPickerRef = useRef(); // Create a ref for the emoji picker
+
+  const addEmoji = (e) => {
+    const emoji = e.native;
+    setNewMessage((prevMessage) => prevMessage + emoji);
+  };
+
+  // Handle click outside of emoji picker
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (emojiPickerRef.current && !emojiPickerRef.current.contains(event.target)) {
+        setShowEmojiPicker(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+
+  
   return (
     <>
       {selectedChat ? (
@@ -1428,8 +1449,14 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     </div>
   )}
 
-  {showEmojiPicker && (
-    <Box position="absolute" bottom="60px" right="20px">
+  {showEmojiPicker && (    //wehn showEmojiPicker is true , then open the emoji box
+    <Box 
+    position="absolute"   
+    bottom={{ base: "20px", md: "60px" }}  // Adjust bottom positioning for mobile
+    right={{ base: "10px", md: "20px" }}   // Adjust right positioning for mobile
+    zIndex={10}  // Ensure it stays above other elements
+    ref={emojiPickerRef} //this reference will make the emoji box to close when user clicks outside the emoji box, attach the ref to the box 
+    >  
       <Picker 
         data={data} 
         onEmojiSelect={addEmoji} 
@@ -1506,49 +1533,66 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 )}
 
 <Box display="flex" alignItems="center">
+<InputGroup>
+  <InputLeftElement>
+      <IconButton
+          icon={<AttachmentIcon />}
+          variant="ghost"
+          aria-label="Attach File"
+          fontSize="24px"
+          marginLeft="2px"
+          onClick={() => document.getElementById('fileInput').click()}
+          _hover={{ backgroundColor: 'gray.100' }}
+          _focus={{ boxShadow: "none" }}  // Remove the blue outline on focus
+        />
+        <input
+          type="file"
+          id="fileInput"
+          style={{ display: 'none' }}
+          onChange={handleFileChange}
+          accept="image/*,video/*,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+        />
+  </InputLeftElement>
+
+
   <Input
     variant="filled"
     bg="#E0E0E0"
     placeholder="Enter a message.."
     value={newMessage}
     onChange={typingHandler}
+    _focus={{ boxShadow: "none" }}  // Remove the blue outline on focus(on clicking )
     onKeyDown={(e) => {
       if (e.key === "Enter") {
         handleSend();
       }
     }}
+    onClick={() => setShowEmojiPicker(false)} // Close emoji picker on input click
   />
-  <IconButton
-    icon={<AttachmentIcon />}
-    variant="ghost"
-    aria-label="Attach File"
-    fontSize="24px"
-    marginLeft="2px"
-    onClick={() => document.getElementById('fileInput').click()}
-    _hover={{ backgroundColor: 'gray.100' }}
-  />
-  <input
-    type="file"
-    id="fileInput"
-    style={{ display: 'none' }}
-    onChange={handleFileChange}
-    accept="image/*,video/*,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-  />
+  
+  <InputRightElement width="4.5rem">
+    <IconButton
+      icon={<FontAwesomeIcon icon={faSmile} />}
+      onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+      aria-label="Emoji Picker"
+      variant="ghost"
+      fontSize="20px"
+      marginLeft="2px"
+      _focus={{ boxShadow: "none" }}  // Remove the blue outline on focus (after clicking )
+    />
+  </InputRightElement>
+  
+</InputGroup>
+ 
   <IconButton
     icon={<ArrowRightIcon />}
     onClick={handleSend}
     aria-label="Send Message"
     colorScheme="blue"
     marginLeft="2px"
+    _focus={{ boxShadow: "none" }}  // Remove the blue outline on focus (after clicking )
   />
-  <IconButton
-    icon={<FontAwesomeIcon icon={faSmile} />}
-    onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-    aria-label="Emoji Picker"
-    variant="ghost"
-    fontSize="20px"
-    marginLeft="2px"
-  />
+
 </Box>
 
 </FormControl>

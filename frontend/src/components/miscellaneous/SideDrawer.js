@@ -204,7 +204,16 @@ function SideDrawer() {
       >
          {/*Never give comment aside to Tooltip , it can cause error, becoz , tooltip can have only one child(or tooltip can just wrap only one component inside it, confirmed)(here it is just button , and again button is wrapping two component(an icon and a text, but, it has nothing to do with tooltip, tooltip is just wraping only one child ie. button)) , tooltip label appears when we hover on the thing which it is wrapping/ or when we hover on it's child.(here, it is button) */}
         <Tooltip label="Search Users to chat" hasArrow placement="bottom-end">
-          <Button variant="ghost" onClick={onOpen} _hover={{ bg: "green.500", color: "white" }} >  {/*on hover on the button , we will have bg color of the button as green and text color will be white*/}
+          <Button 
+          variant="ghost" 
+          onClick={() => {
+            onOpen();
+            // This will ensure the button loses focus and the tooltip hides after opening the drawer
+            document.activeElement.blur();
+          }}
+          _hover={{ bg: "green.500", color: "white" }}   //on hover on the button , we will have bg color of the button as green and text color will be white
+          _focus={{ boxShadow: "none" }}  // Remove the blue outline on focus
+           > 
               <i className="fas fa-search"></i>
               <Text d={{ base: "none", md: "flex" }} px={4} color="#FFFFFF">
                   Search User
@@ -277,7 +286,7 @@ function SideDrawer() {
         <DrawerContent bg="linear-gradient(to right, #4A90E2, #9013FE)">   {/*content of drawer , so , background can be changed with it. */}
           <DrawerHeader borderBottomWidth="1px" borderColor="black">Search Users</DrawerHeader>  {/*header of drawer , comes with the parameter borderbottom (for a line or a seperator)*/ }
           <DrawerBody>
-            <Box d="flex" pb={2}>  {/* change here anything for changing input box(this is a container of input)*/}
+            <Box display="flex" pb={2}>  {/* change here anything for changing input box(this is a container of input)*/}
             <Input
                 placeholder="Search by name or email"
                 mr={2}
