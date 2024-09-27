@@ -1452,12 +1452,12 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   {showEmojiPicker && (    //wehn showEmojiPicker is true , then open the emoji box
     <Box 
     position="absolute"   
-    bottom={{ base: "20px", md: "60px" }}  // Adjust bottom positioning for mobile and desktop
+    bottom={{ base: "60px", md: "80px" }}  // Adjust bottom positioning for mobile and desktop
     left={{ base: "5%", md: "unset" }}     // Position from left on mobile
     right={{ base: "unset", md: "20px" }}  // Right positioning for larger screens
     zIndex={10}  // Ensure it stays above other elements
     ref={emojiPickerRef} // Attach ref for click outside detection
-    width={{ base: "90%", md: "320px" }}  // 90% width on mobile, fixed on desktop
+    width={{ base: "95%", md: "320px" }}  // 95% width on mobile, fixed on desktop
     maxWidth="320px"  // Maximum width on larger screens
     maxHeight="350px"
     overflowY="auto"  // Allow vertical scrolling if necessary
@@ -1470,9 +1470,11 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
         onEmojiSelect={addEmoji} 
         theme="light"
         style={{
-        width: '100%',       // Ensures the picker takes full container width
-        height: 'auto',       // Auto height for smaller content
-        maxHeight: '350px',  // Maintain maximum height
+          width: '100%',        // Full container width
+          height: 'auto',       // Auto height to adapt to content
+          maxHeight: '350px',   // Max height for larger content
+          borderRadius: '8px',  // Rounded edges for better appearance
+          overflowY: 'scroll',  // Enable scrolling in the picker
         }}
       />
     </Box>
