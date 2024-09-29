@@ -9,14 +9,17 @@ import SuccessEmail from './Pages/SuccessEmail';
 function App() {
   return (
     <div className="App">
-      <Switch>
-        <Route exact path="/" component={Homepage} />
-        <Route path="/chats" component={Chatpage} />
-        <Route path="/email-verification" component={EmailVerification} />
-        <Route path="/verify-email/:token" component={EmailVerification} />  {/* Link validation */}
-        <Route path="/NotSucEmail" component={NotSucEmail} />
-        <Route path="/SuccessEmail" component={SuccessEmail} />
-      </Switch>
+      <Router basename="/chatAppFull">  {/*set basename property to the name of the repo , this is done to overcome 404 error */}
+        <Switch>
+          <Route exact path="/" component={Homepage} />
+          <Route path="/chats" component={Chatpage} />
+          <Route path="/email-verification" component={EmailVerification} />
+          <Route path="/verify-email/:token" component={EmailVerification} />  {/* Link validation */}
+          <Route path="/NotSucEmail" component={NotSucEmail} />
+          <Route path="/SuccessEmail" component={SuccessEmail} />
+        </Switch>
+      </Router>
+      
     </div>
   );
 }
