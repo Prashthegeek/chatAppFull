@@ -128,7 +128,7 @@ const sendVerificationEmail = asyncHandler(async (user, req, res) => {
     service: "gmail",
     auth: {
       user: process.env.EMAIL_USER,  // Your email
-      pass: process.env.EMAIL_PASS,  // Your email password
+      pass: process.env.EMAIL_PASS,  // Your email passkey of the app(can be seen by searching app pass... in the gmail manage (but, this option can only be seen after doing 2 step verification.))
     },
   });
 
@@ -137,7 +137,7 @@ const sendVerificationEmail = asyncHandler(async (user, req, res) => {
     to: user.email,
     subject: "Email Verification",
     html: `<h2>Please verify your email</h2>
-           <p>Click <a href="http://localhost:5000/api/user/verify-email/${token}">here</a> to verify your email.</p>`,
+           <p>Click <a href="https://chatappfull.onrender.com/${token}">here</a> to verify your email.</p>`,
   };
 
   transporter.sendMail(mailOptions, (error, info) => {
@@ -187,7 +187,7 @@ const verifyEmail = asyncHandler(async (req, res) => {
   await user.save();
 
   // Delete the verification record
-  await UserVerify.findByIdAndDelete(verifyRecord._id);
+  await UserVerify.findByIdAndDelete(verifyRecord._id);  //deleting the id will delete this document of this user.
 
   // Redirect to the SuccessEmail page
   console.log("abhi redirect karne wala hu");
